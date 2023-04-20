@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
-import blogService from "./services/blogs";
 import LoginForm from "./components/LoginForm";
+import blogService from "./services/blogs";
+import login from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -11,7 +12,14 @@ const App = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("logging in with", username, password);
+    try {
+      const user = await login({ username, password });
+      setUser(user);
+      setUsername("");
+      setPassword("");
+    } catch (e) {
+      console.log("Will implement error handlin here", e);
+    }
   };
 
   useEffect(() => {
@@ -21,18 +29,28 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <div>
-        <LoginForm
-          username={username}
-          password={password}
-          handleLogin={handleLogin}
-          handleUsernameOnChange={({ target: { value } }) => setUsername(value)}
-          handlePasswordOnChange={({ target: { value } }) => setPassword(value)}
-        />
-      </div>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      {!user && (
+        <div>
+          <LoginForm
+            username={username}
+            password={password}
+            handleLogin={handleLogin}
+            handleUsernameOnChange={({ target: { value } }) =>
+              setUsername(value)
+            }
+            handlePasswordOnChange={({ target: { value } }) =>
+              setPassword(value)
+            }
+          />
+        </div>
+      )}
+      {user && (
+        <div>
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
