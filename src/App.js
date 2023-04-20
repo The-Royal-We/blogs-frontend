@@ -6,6 +6,9 @@ import login from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
+  const [blogTitle, setBlogTitle] = useState("");
+  const [blogAuthor, setBlogAuthor] = useState("");
+  const [blogUrl, setBlogUrl] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState("");
@@ -62,6 +65,46 @@ const App = () => {
           <div>
             {user.name} has logged in{" "}
             <button onClick={handleLogout}>Logout</button>
+          </div>
+          <div>
+            <h2>create new blogs!</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                console.log(
+                  "callbackend and submit",
+                  blogAuthor,
+                  blogTitle,
+                  blogUrl
+                );
+              }}
+            >
+              <div>
+                title:{" "}
+                <input
+                  type="text"
+                  value={blogTitle}
+                  onChange={({ target: { value } }) => setBlogTitle(value)}
+                />
+              </div>
+              <div>
+                author:{" "}
+                <input
+                  type="text"
+                  value={blogAuthor}
+                  onChange={({ target: { value } }) => setBlogAuthor(value)}
+                />
+              </div>
+              <div>
+                url:{" "}
+                <input
+                  type="text"
+                  value={blogUrl}
+                  onChange={({ target: { value } }) => setBlogUrl(value)}
+                />
+              </div>
+              <button type="submit">create</button>
+            </form>
           </div>
           <div>
             {blogs.map((blog) => (
