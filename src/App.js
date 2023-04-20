@@ -11,19 +11,43 @@ const App = () => {
   const [blogUrl, setBlogUrl] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [blogRecentlyAdded, setBlogRecentlyAdded] = useState(null);
   const [user, setUser] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const user = await login({ username, password });
-      setUser(user);
-      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-      setUsername("");
-      setPassword("");
-    } catch (e) {
-      console.log("Will implement error handlin here", e);
+  const BlogAddedNotification = ({ message }) => {
+    if (message === null) {
+      return null;
     }
+
+    const style = {
+      color: "green",
+      background: "lightgrey",
+      fontSize: "20px",
+      borderStyle: "solid",
+      borderRadius: "5px",
+      padding: "10px",
+      marginBottom: "10px",
+    };
+    return <div style={style}>{message}</div>;
+  };
+
+  const ErrorMessageNotification = ({ message }) => {
+    if (message === null) {
+      return null;
+    }
+
+    const style = {
+      color: "red",
+      background: "lightgrey",
+      fontSize: "20px",
+      borderStyle: "solid",
+      borderRadius: "5px",
+      padding: "10px",
+      marginBottom: "10px",
+    };
+
+    return <div style={style}>{message}</div>;
   };
 
   useEffect(() => {
@@ -44,6 +68,22 @@ const App = () => {
     window.localStorage.removeItem("loggedBlogAppUser");
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const user = await login({ username, password });
+      setUser(user);
+      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
+      setUsername("");
+      setPassword("");
+    } catch (e) {
+      setErrorMessage(e.response.data.error);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
   const handleOnBlogFormSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -54,15 +94,27 @@ const App = () => {
       });
       if (newlyCreatedBlog) {
         setBlogs(blogs.concat(newlyCreatedBlog));
+        const { title, author } = newlyCreatedBlog;
+        setBlogRecentlyAdded(`a new blog ${title} by ${author} has been added`);
+        setTimeout(() => {
+          setBlogRecentlyAdded(null);
+        }, 5000);
       }
     } catch (err) {
-      console.log(err);
+      setErrorMessage(e.message);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     }
   };
 
   return (
     <div>
       <h2>blogs</h2>
+      {errorMessage && <ErrorMessageNotification message={errorMessage} />}
+      {blogRecentlyAdded && (
+        <BlogAddedNotification message={blogRecentlyAdded} />
+      )}
       {!user && (
         <div>
           <LoginForm
