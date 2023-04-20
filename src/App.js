@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
-import blogService from "./services/blogs";
+import { getAllBlogs, createBlog, setApiToken } from "./services/blogs";
 import login from "./services/login";
 
 const App = () => {
@@ -29,17 +29,35 @@ const App = () => {
   useEffect(() => {
     const storedUser = window.localStorage.getItem("loggedBlogAppUser");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const user = JSON.parse(storedUser);
+      setUser(user);
+      setApiToken(user.token);
     }
   }, []);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    getAllBlogs().then((blogs) => setBlogs(blogs));
   }, []);
 
   const handleLogout = () => {
     setUser(null);
     window.localStorage.removeItem("loggedBlogAppUser");
+  };
+
+  const handleOnBlogFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const newlyCreatedBlog = await createBlog({
+        author: blogAuthor,
+        title: blogTitle,
+        url: blogUrl,
+      });
+      if (newlyCreatedBlog) {
+        setBlogs(blogs.concat(newlyCreatedBlog));
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -68,17 +86,7 @@ const App = () => {
           </div>
           <div>
             <h2>create new blogs!</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                console.log(
-                  "callbackend and submit",
-                  blogAuthor,
-                  blogTitle,
-                  blogUrl
-                );
-              }}
-            >
+            <form onSubmit={handleOnBlogFormSubmit}>
               <div>
                 title:{" "}
                 <input
