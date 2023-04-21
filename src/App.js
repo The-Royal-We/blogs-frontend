@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import CreateBlogForm from "./components/CreateBlogForm";
+import Toggleable from "./components/Toggleable";
 import { getAllBlogs, createBlog, setApiToken } from "./services/blogs";
 import login from "./services/login";
 
@@ -109,6 +110,18 @@ const App = () => {
     }
   };
 
+  const loginForm = () => (
+    <Toggleable buttonLabel={"Click to Login"}>
+      <LoginForm
+        username={username}
+        password={password}
+        handleLogin={handleLogin}
+        handleUsernameOnChange={({ target: { value } }) => setUsername(value)}
+        handlePasswordOnChange={({ target: { value } }) => setPassword(value)}
+      />
+    </Toggleable>
+  );
+
   return (
     <div>
       <h2>blogs</h2>
@@ -116,21 +129,7 @@ const App = () => {
       {blogRecentlyAdded && (
         <BlogAddedNotification message={blogRecentlyAdded} />
       )}
-      {!user && (
-        <div>
-          <LoginForm
-            username={username}
-            password={password}
-            handleLogin={handleLogin}
-            handleUsernameOnChange={({ target: { value } }) =>
-              setUsername(value)
-            }
-            handlePasswordOnChange={({ target: { value } }) =>
-              setPassword(value)
-            }
-          />
-        </div>
-      )}
+      {!user && <div>{loginForm()}</div>}
       {user && (
         <div>
           <div>
