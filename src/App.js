@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import CreateBlogForm from "./components/CreateBlogForm";
@@ -16,6 +16,8 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [blogRecentlyAdded, setBlogRecentlyAdded] = useState(null);
   const [user, setUser] = useState("");
+  const blogRef = useRef();
+  const loginRef = useRef();
 
   const BlogAddedNotification = ({ message }) => {
     if (message === null) {
@@ -111,7 +113,7 @@ const App = () => {
   };
 
   const loginForm = () => (
-    <Toggleable buttonLabel={"Click to Login"}>
+    <Toggleable buttonLabel={"Click to Login"} ref={loginRef}>
       <LoginForm
         username={username}
         password={password}
@@ -119,9 +121,26 @@ const App = () => {
         handleUsernameOnChange={({ target: { value } }) => setUsername(value)}
         handlePasswordOnChange={({ target: { value } }) => setPassword(value)}
       />
+      <button onClick={() => loginRef.current.toggleVisibility()}>
+        cancel
+      </button>
     </Toggleable>
   );
 
+  const createBlogForm = () => (
+    <Toggleable buttonLabel={"Click to create a post"} ref={blogRef}>
+      <CreateBlogForm
+        blogTitle={blogTitle}
+        setBlogTitle={setBlogTitle}
+        blogAuthor={blogAuthor}
+        setBlogAuthor={setBlogAuthor}
+        blogUrl={blogUrl}
+        setBlogUrl={setBlogUrl}
+        handleOnBlogFormSubmit={handleOnBlogFormSubmit}
+      />
+      <button onClick={() => blogRef.current.toggleVisibility()}>cancel</button>
+    </Toggleable>
+  );
   return (
     <div>
       <h2>blogs</h2>
@@ -136,15 +155,7 @@ const App = () => {
             {user.name} has logged in{" "}
             <button onClick={handleLogout}>Logout</button>
           </div>
-          <CreateBlogForm
-            blogTitle={blogTitle}
-            setBlogTitle={setBlogTitle}
-            blogAuthor={blogAuthor}
-            setBlogAuthor={setBlogAuthor}
-            blogUrl={blogUrl}
-            setBlogUrl={setBlogUrl}
-            handleOnBlogFormSubmit={handleOnBlogFormSubmit}
-          ></CreateBlogForm>
+          {createBlogForm()}
           <div>
             {blogs.map((blog) => (
               <Blog key={blog.id} blog={blog} />
