@@ -8,9 +8,6 @@ import login from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [blogTitle, setBlogTitle] = useState("");
-  const [blogAuthor, setBlogAuthor] = useState("");
-  const [blogUrl, setBlogUrl] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
@@ -88,14 +85,9 @@ const App = () => {
     }
   };
 
-  const handleOnBlogFormSubmit = async (e) => {
-    e.preventDefault();
+  const handleBlogFormSubmit = async (blog) => {
     try {
-      const newlyCreatedBlog = await createBlog({
-        author: blogAuthor,
-        title: blogTitle,
-        url: blogUrl,
-      });
+      const newlyCreatedBlog = await createBlog(blog);
       if (newlyCreatedBlog) {
         setBlogs(blogs.concat(newlyCreatedBlog));
         const { title, author } = newlyCreatedBlog;
@@ -105,11 +97,12 @@ const App = () => {
         }, 5000);
       }
     } catch (err) {
-      setErrorMessage(e.message);
+      setErrorMessage(err.message);
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
     }
+    blogRef.current.toggleVisibility();
   };
 
   const loginForm = () => (
@@ -129,15 +122,7 @@ const App = () => {
 
   const createBlogForm = () => (
     <Toggleable buttonLabel={"Click to create a post"} ref={blogRef}>
-      <CreateBlogForm
-        blogTitle={blogTitle}
-        setBlogTitle={setBlogTitle}
-        blogAuthor={blogAuthor}
-        setBlogAuthor={setBlogAuthor}
-        blogUrl={blogUrl}
-        setBlogUrl={setBlogUrl}
-        handleOnBlogFormSubmit={handleOnBlogFormSubmit}
-      />
+      <CreateBlogForm createBlog={handleBlogFormSubmit} />
       <button onClick={() => blogRef.current.toggleVisibility()}>cancel</button>
     </Toggleable>
   );
