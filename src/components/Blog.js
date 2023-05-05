@@ -1,25 +1,5 @@
 import { useState } from "react";
 
-const BlogDetail = ({ blog, style, handleToggle }) => {
-  const { title, author, url, likes } = blog;
-  return (
-    <div style={style}>
-      <p>
-        {title} <button onClick={handleToggle}>hide</button>
-      </p>
-      <p>{url}</p>
-      <p>Likes: {likes}</p>
-      <p>{author}</p>
-    </div>
-  );
-};
-
-const BlogSummary = ({ blog, style }) => (
-  <div style={style}>
-    {blog.title} {blog.author}
-  </div>
-);
-
 const Blog = ({ blog }) => {
   const blogStyle = {
     paddingTop: 10,
@@ -28,10 +8,30 @@ const Blog = ({ blog }) => {
     borderWidth: 1,
     marginBottom: 5,
   };
+  const { title, author, url, likes } = blog;
   const [showDetail, setShowDetail] = useState(false);
-  const handleToggle = () => setShowDetail(!showDetail);
-  // return <BlogDetail style={blogStyle} blog={blog} />;
-  return <BlogSummary blog={blog} style={blogStyle} />;
+  const handleViewToggle = () => setShowDetail(!showDetail);
+
+  const showWhenToggledStyle = { display: showDetail ? "" : "none" };
+  const buttonText = showDetail ? "hide" : "view";
+  return (
+    <div>
+      <div id={"blogSummary"} style={blogStyle}>
+        {title} {author}
+        <button onClick={handleViewToggle}>{buttonText}</button>
+        <div style={showWhenToggledStyle}>
+          <p>
+            <a href={url}>{url}</a>
+          </p>
+          <p>
+            Likes: {likes}
+            <button>Like</button>
+          </p>
+          <p>{author}</p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Blog;
