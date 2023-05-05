@@ -22,5 +22,14 @@ const createBlog = async (blogData) => {
   return data;
 };
 
+const updateBlog = async (id, blogData) => {
+  const config = {
+    headers: { Authorization: apiToken },
+  };
+  const request = await axios.put(`${baseUrl}/${id}`, blogData, config);
+  const { data } = request;
+  return data;
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export { getAllBlogs, createBlog, setApiToken };
+export { getAllBlogs, createBlog, setApiToken, updateBlog };

@@ -3,7 +3,12 @@ import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import CreateBlogForm from "./components/CreateBlogForm";
 import Toggleable from "./components/Toggleable";
-import { getAllBlogs, createBlog, setApiToken } from "./services/blogs";
+import {
+  getAllBlogs,
+  createBlog,
+  setApiToken,
+  updateBlog,
+} from "./services/blogs";
 import login from "./services/login";
 
 const App = () => {
@@ -126,6 +131,23 @@ const App = () => {
       <button onClick={() => blogRef.current.toggleVisibility()}>cancel</button>
     </Toggleable>
   );
+
+  const handleLikeButton = async (blog) => {
+    const blogToBeUpdated = {
+      ...blog,
+      likes: blog.likes + 1,
+    };
+    try {
+      const newBlog = await updateBlog(blog.id, blogToBeUpdated);
+      setBlogs(blogs.map((b) => (b.id !== newBlog.id ? b : newBlog)));
+    } catch (e) {
+      setErrorMessage(e.response.data.error);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
   return (
     <div>
       <h2>blogs</h2>
@@ -143,7 +165,11 @@ const App = () => {
           {createBlogForm()}
           <div>
             {blogs.map((blog) => (
-              <Blog key={blog.id} blog={blog} />
+              <Blog
+                key={blog.id}
+                blog={blog}
+                handleLikeButton={handleLikeButton}
+              />
             ))}
           </div>
         </div>
