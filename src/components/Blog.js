@@ -8,7 +8,7 @@ const Blog = ({ blog }) => {
     borderWidth: 1,
     marginBottom: 5,
   };
-  const { title, author, url, likes } = blog;
+  const { title, author, url, likes, user } = blog;
   const [showDetail, setShowDetail] = useState(false);
   const handleViewToggle = () => setShowDetail(!showDetail);
 
@@ -27,7 +27,7 @@ const Blog = ({ blog }) => {
             Likes: {likes}
             <button>Like</button>
           </p>
-          <p>{author}</p>
+          <p>{user.name}</p>
         </div>
       </div>
     </div>
