@@ -40,5 +40,4 @@ const deleteBlog = async (id) => {
   return data;
 };
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export { getAllBlogs, createBlog, setApiToken, updateBlog, deleteBlog };
