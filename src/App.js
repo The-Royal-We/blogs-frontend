@@ -8,6 +8,7 @@ import {
   createBlog,
   setApiToken,
   updateBlog,
+  deleteBlog,
 } from "./services/blogs";
 import login from "./services/login";
 
@@ -148,6 +149,22 @@ const App = () => {
     }
   };
 
+  const handleDeleteButton = async (blog) => {
+    const { id, title } = blog;
+    const confirm = window.confirm(`Remove ${title}?`);
+    if (confirm) {
+      try {
+        await deleteBlog(id);
+        setBlogs(blogs.filter((b) => b.id !== id));
+      } catch (e) {
+        setErrorMessage(e.response.data.error);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      }
+    }
+  };
+
   return (
     <div>
       <h2>blogs</h2>
@@ -171,6 +188,8 @@ const App = () => {
                   key={blog.id}
                   blog={blog}
                   handleLikeButton={handleLikeButton}
+                  handleRemoveButton={handleDeleteButton}
+                  activeUser={user}
                 />
               ))}
           </div>
